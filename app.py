@@ -1,7 +1,9 @@
 import streamlit as st
+import requests
+import pandas as pd
 
 '''
-# TaxiFareModel front
+# Cheapest Beer Zé - front-end
 '''
 
 st.markdown('''
@@ -10,35 +12,51 @@ Remember that there are several ways to output content into your web page...
 Either as with the title by just creating a string (or an f-string). Or as with this paragraph using the `st.` functions
 ''')
 
-'''
-
-TESTE
-## Here we would like to add some controllers in order to ask the user to select the parameters of the ride
-
-1. Let's ask for:
-- date and time
-- pickup longitude
-- pickup latitude
-- dropoff longitude
-- dropoff latitude
-- passenger count
-'''
 
 '''
-## Once we have these, let's call our API in order to retrieve a prediction
-
-See ? No need to load a `model.joblib` file in this app, we do not even need to know anything about Data Science in order to retrieve a prediction...
-
-🤔 How could we call our API ? Off course... The `requests` package 💡
+Choose inputs
 '''
 
-url = 'https://cheapestbeer-35giwnmc6q-ew.a.run.app/'
+url = 'https://cheapestbeer-35giwnmc6q-ew.a.run.app/get_beers'
 
-'''
-2. Let's build a dictionary containing the parameters for our API...
 
-3. Let's call our API using the `requests` package...
+location = st.text_input('Digite seu endereço.')
+wanted_brands = st.text_input('Escolhas as marcas que você quer incluir*.')
+unwanted_brands = st.text_input('Escolhas as marcas que você quer excluir.')
+returnable = st.radio('Você deseja incluir:', ('Apenas cervejas não retornáveis', 'Apenas cervejas retornáveis', 'Ambos'))
+if returnable == 'Apenas cervejas não retornáveis':
+    returnable = ['No']
+elif returnable == 'Apenas cervejas retornáveis':
+    returnable = ['Yes']
+else:
+    returnable = ['Yes','No']
 
-4. Let's retrieve the prediction from the **JSON** returned by the API...
-'''
-## Finally, we can display the prediction to the user
+milimeters = st.text_input('Escolha o volume máximo da lata/garrafa.')
+
+
+location = 'Rua Mascarenhas de Morais, 132'
+wanted_brands = []
+unwanted_brands = ['Skol']
+returnable = ['No']
+milimeters  = '325'
+
+params = {'address':location,
+         'wb':str(wanted_brands),
+         'ub':str(unwanted_brands),
+         'r':str(returnable),
+         'mm':milimeters}
+
+
+
+
+if st.button('Pequisar opções mais baratas.'):
+    st.write('Isso pode demorar de 1 a 2 minutos.')
+    st.write(params)
+    response = requests.get(url, params=params)
+    st.write(response)
+    data = response.json()
+    st.write('Resultado:', response.json()['Response'])
+    df = pd.DataFrame.from_dict(data['Response'])
+    st.write(df)    
+else:
+    pass
