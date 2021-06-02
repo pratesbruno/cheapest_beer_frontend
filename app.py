@@ -1,5 +1,4 @@
 import streamlit as st
-#from streamlit import caching
 import requests
 import numpy as np
 import pandas as pd
@@ -49,20 +48,8 @@ def get_df(params):
         return None
     else:
         df = pd.DataFrame.from_dict(resposta)
-        col1.write('Endereço definido.')
+        col1.write('Endereço definido. Aplique os filtros para visualizar as cervejas mais baratas.')
         return df
-    # try:
-    #     len(df)
-    #     #reduced_df = df[['Product','Price','Price per Liter']]
-    #     # col1.write('Cervejas mais baratas (sem filtros):')
-    #     # col1.write(df.head(5))
-    #     return df
-    # except:
-    #     # if resposta == "Address invalid. Please try again with a valid address.":
-    #     #     col1.write('Endereço inválido. Tente novamente com um endereço válido.')
-    #     # else:
-    #     #     col1.write('Ocorreu um erro. Por favor, tente novamente.')
-    #     return None
 
 def set_address():
     st.caching.clear_cache()
@@ -71,7 +58,6 @@ def set_address():
      Isso deve demorar entre 1 a 2 minutos.''')
     df = get_df(params)
     
-
 def filter_df():
     df = get_df(params)
     try:
@@ -83,45 +69,38 @@ def filter_df():
         # Apply conditions
         filtered_df = df[combined_cond]
         filtered_df.reset_index(drop=True,inplace=True)
-        #reduced_df = filtered_df['']
+        reduced_filtered_df = filtered_df[['Product','Price','Price Per Liter']].round(2)
+        reduced_filtered_df.columns = ['Produto','Preço','Preço p/ Litro']
+        reduced_original_df = df[['Product','Price','Price Per Liter']].round(2)
+        reduced_original_df.columns = ['Produto','Preço','Preço p/ Litro']
         col3.write('Filtros aplicados.')
-        col1.write('Df original:')
-        col1.write(df.head(5))
-        col1.write('Df filtrado:')
-        col1.write(filtered_df.head(5))
+        col1.write('Cervejas mais baratas (sem filtro):')
+        col1.write(reduced_original_df.head(5))
+        col1.write('Cervejas mais baratas (com filtro):')
+        col1.write(reduced_filtered_df.head(5))
     except:
         col1.write('Ocorreu um erro. Certifique que o endereço está correto e tente novamente.')
 
-url = 'https://cheapestbeer2-35giwnmc6q-ew.a.run.app/get_beers'
-
-st.header('Cerveja barata - Zé Delivery')
+# Page structure
+st.title('Cerveja barata - Zé Delivery')
 st.markdown('Descubra as opções de cerveja mais baratas oferecidas pelo Zé Delivery, e filtre de acordo com suas preferências')
-
 col1,col2,col3 = st.beta_columns((2,1,1))
-
 col1.markdown('<p class="subtitle">Passo 1: Defina o endereço de entrega.</p>', unsafe_allow_html=True)
-
 location = col1.text_input('Entre com o nome da rua e número. Não inclua o complemento.')
 
+url = 'https://cheapestbeer2-35giwnmc6q-ew.a.run.app/get_beers'
 params = {'address':str(location),
          'wb':str([]),
          'ub':str([]),
          'r':str(['Yes','No']),
          'mm':'9999'}
 
+# Button that sets the address
 if col1.button('Confirmar endereço.'):
-    set_address()
-    # st.caching.clear_cache()
-    # col1.write('''Estamos rodando um scraper que vai pesquisar e compilar as cervejas disponíveis
-    #  nesse momento no site do Zé Delivery para o endereço selecionado.
-    #  Isso deve demorar entre 1 a 2 minutos.''')
-    
-    # df = get_df(params)
-    # col1.write('Endereço definido.')
-    
+    set_address()    
 
 col2.markdown('<p class="subtitle">Passo 2: Defina os filtros.</p>', unsafe_allow_html=True)
-col2.markdown('<p class="small-font">Escolha as marcas que você quer excluir.</p>', unsafe_allow_html=True)
+col2.markdown('<p class="small-font">Quais marcas você quer EXCLUIR da análise?</p>', unsafe_allow_html=True)
 col2.write('')
 col3.write('')
 col3.write('')
@@ -158,10 +137,8 @@ else:
     returnable = ['Yes','No']
 col2.markdown('<p class="very-small-font">* Cervejas retornáveis requerem que você retorne uma garrafa vazia ao entregador.</p>', unsafe_allow_html=True)
 
-max_mls = col3.number_input('Escolha o volume máximo da lata/garrafa (mls).',min_value=0,step=1,value=9999)
+max_mls = col3.number_input('Escolha o volume máximo da lata/garrafa (mls), ou deixe 9999 para incluir tudo.',min_value=0,step=1,value=9999)
 
-
-
-
+# Button to apply filters
 if col3.button('Filtrar'):
     filter_df()
