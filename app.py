@@ -104,7 +104,6 @@ def display_beers(df1, df2):
 st.title('Cerveja barata - Zé Delivery')
 st.markdown('Descubra as opções de cerveja mais baratas oferecidas pelo Zé Delivery de acordo com suas preferências.')
 st.markdown('')
-#col1,col2,col3 = st.beta_columns((2,1,1))
 st.markdown('<p class="subtitle">Passo 1: Defina o endereço de entrega.</p>', unsafe_allow_html=True)
 location = st.text_input('Entre com o nome da rua e número. Não inclua o complemento.')
 
