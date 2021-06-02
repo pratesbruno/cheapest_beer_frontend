@@ -14,8 +14,12 @@ hide_streamlit_style = """
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
+.reportview-container .main .block-container{
+    padding-top: 0px !important;
+}
 </style>
 """
+
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 # Define custom css classes
@@ -40,7 +44,7 @@ st.markdown("""
 # Main function that calls the API hosted in GCR to scrape the delivery website, based on the provided address.
 @st.cache(suppress_st_warning=True)
 def get_df(params):
-    response = requests.get(url, params=params)
+    response = requests.get(api_url, params=params)
     data = response.json()
     resposta = data['Response']
     if resposta == "Address invalid. Please try again with a valid address.":
@@ -69,26 +73,30 @@ def filter_df():
         # Apply conditions
         filtered_df = df[combined_cond]
         filtered_df.reset_index(drop=True,inplace=True)
-        reduced_filtered_df = filtered_df[['Product','Price','Price Per Liter']].round(2)
-        reduced_filtered_df.columns = ['Produto','Preço','Preço p/ Litro']
-        reduced_original_df = df[['Product','Price','Price Per Liter']].round(2)
-        reduced_original_df.columns = ['Produto','Preço','Preço p/ Litro']
+        reduced_filtered_df = filtered_df[['Product','Price','Price Per Liter']]
+        reduced_filtered_df.columns = ['Produto','Preço (R$)','Preço p/ Litro']
+        reduced_original_df = df[['Product','Price','Price Per Liter']]
+        reduced_original_df.columns = ['Produto','Preço (R$)','Preço p/ Litro']
         col3.write('Filtros aplicados.')
-        col1.write('Cervejas mais baratas (sem filtro):')
-        col1.write(reduced_original_df.head(5))
-        col1.write('Cervejas mais baratas (com filtro):')
-        col1.write(reduced_filtered_df.head(5))
+        col1.markdown('<p class="subtitle">Cervejas mais baratas (sem filtro):</p>', unsafe_allow_html=True)
+        col1.dataframe(reduced_original_df.head(5).style.format({'Preço (R$)': '{:.2f}', 'Preço p/ Litro': '{:.2f}'}))
+        col1.markdown('<p class="subtitle">Cervejas mais baratas (com filtro):</p>', unsafe_allow_html=True)
+        col1.dataframe(reduced_filtered_df.head(5).style.format({'Preço (R$)': '{:.2f}', 'Preço p/ Litro': '{:.2f}'}))
+        col1.write('Acesse o Zé Delivery para comprar suas cervejas no link abaixo:')
+        col1.markdown(ze_url, unsafe_allow_html=True)
     except:
         col1.write('Ocorreu um erro. Certifique que o endereço está correto e tente novamente.')
 
 # Page structure
 st.title('Cerveja barata - Zé Delivery')
-st.markdown('Descubra as opções de cerveja mais baratas oferecidas pelo Zé Delivery, e filtre de acordo com suas preferências')
+st.markdown('Descubra as opções de cerveja mais baratas oferecidas pelo Zé Delivery de acordo com suas preferências.')
+st.markdown('')
 col1,col2,col3 = st.beta_columns((2,1,1))
 col1.markdown('<p class="subtitle">Passo 1: Defina o endereço de entrega.</p>', unsafe_allow_html=True)
 location = col1.text_input('Entre com o nome da rua e número. Não inclua o complemento.')
 
-url = 'https://cheapestbeer2-35giwnmc6q-ew.a.run.app/get_beers'
+ze_url = 'https://www.ze.delivery/produtos/categoria/cervejas'
+api_url = 'https://cheapestbeer2-35giwnmc6q-ew.a.run.app/get_beers'
 params = {'address':str(location),
          'wb':str([]),
          'ub':str([]),
