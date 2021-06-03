@@ -163,7 +163,7 @@ col1.markdown('<p class="very-small-font">* Cervejas retornáveis requerem que v
 max_mls = col1.number_input('Escolha o volume máximo da lata/garrafa (mls), ou deixe 9999 para incluir tudo.',min_value=0,step=1,value=9999)
 
 # Button to apply filters
-if col1.button('Buscar cervejas'):
+if st.button('Buscar cervejas'):
     try:
         unfiltered_df, filtered_df = filter_df()
         treated_unfiltered_df = treat_df(unfiltered_df)
