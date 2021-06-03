@@ -42,7 +42,7 @@ st.markdown("""
 
 # Main function that calls the API hosted in GCR to scrape the delivery website, based on the provided address.
 @st.cache(suppress_st_warning=True)
-def get_df(params):
+def scrape_beers(params):
     response = requests.get(api_url, params=params)
     data = response.json()
     resposta = data['Response']
@@ -59,10 +59,10 @@ def set_address():
     st.write('''Estamos rodando um scraper que vai pesquisar e compilar as cervejas disponíveis
      nesse momento no site do Zé Delivery para o endereço selecionado.
      Isso deve demorar entre 1 a 2 minutos.''')
-    df = get_df(params)
+    df = scrape_beers(params)
     
 def filter_df():
-    df = get_df(params)
+    df = scrape_beers(params)
     # Conditions
     c1 = np.logical_not(df['Brand'].isin(unwanted_brands))
     c2 = df['Returnable'].isin(returnable)
