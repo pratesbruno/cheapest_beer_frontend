@@ -43,14 +43,16 @@ st.markdown("""
 # Main function that calls the API hosted in GCR to scrape the delivery website, based on the provided address.
 @st.cache(suppress_st_warning=True)
 def scrape_beers(params):
-    response = requests.get(api_url, params=params)
-    data = response.json()
-    resposta = data['Response']
-    if resposta == "Address invalid. Please try again with a valid address.":
+    response_json = requests.get(api_url, params=params).json()
+    response = response_json['Response']
+    if response == "Address invalid. Please try again with a valid address.":
         st.write('Endereço inválido. Tente novamente com um endereço válido.')
         return None
+    elif response == 'No suppliers open. Try again another time or with another address.':
+        st.write('Nenhum distribuidor aberto no momento. Tente novamente mais tarde (horário de funcionamento 10h as 23h BRT.')
+        return None
     else:
-        df = pd.DataFrame.from_dict(resposta)
+        df = pd.DataFrame.from_dict(response)
         st.write('Endereço definido. Aplique os filtros para visualizar as cervejas mais baratas.')
         return df
 
