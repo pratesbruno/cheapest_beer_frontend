@@ -48,8 +48,8 @@ def scrape_beers(params):
     if response == "Address invalid. Please try again with a valid address.":
         st.write('Endereço inválido. Tente novamente com um endereço válido.')
         return None
-    elif response == 'No suppliers open. Try again another time or with another address.':
-        st.write('Nenhum distribuidor aberto no momento. Tente novamente mais tarde (horário de funcionamento 10h as 23h BRT.')
+    elif response == 'No product available now. Try again another time or with another address.':
+        st.write('Nenhum produto disponível no momento. Tente novamente mais tarde (horário de funcionamento 10h as 23h BRT.')
         return None
     else:
         df = pd.DataFrame.from_dict(response)
