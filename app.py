@@ -110,7 +110,7 @@ st.markdown('<p class="subtitle">Passo 1: Defina o endereço de entrega.</p>', u
 location = st.text_input('Entre com o nome da rua e número. Não inclua o complemento.')
 
 ze_url = 'https://www.ze.delivery/produtos/categoria/cervejas'
-api_url = 'https://cheapestbeer2-35giwnmc6q-ew.a.run.app/get_beers'
+api_url = 'https://cheapestbeer3-35giwnmc6q-ew.a.run.app/get_beers'
 params = {'address':str(location),
          'wb':str([]),
          'ub':str([]),
